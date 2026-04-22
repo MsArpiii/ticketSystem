@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="home-container">
+
+    <div class="card-glass form-card">
+        <h2 class="mb-3">🎫 Create a Ticket</h2>
+        <p class="subtitle">Report your issue quickly and easily</p>
+
+        <form method="POST" id="ticketForm">
+
+            <div class="floating-group">
+                <input type="text" name="title" id="title" required>
+                <label>Issue Title</label>
+                <small class="error" id="titleError"></small>
+            </div>
+
+            <div class="floating-group">
+                <textarea name="desc" id="desc" rows="3" required></textarea>
+                <label>Description</label>
+                <small class="char-count" id="charCount">0 / 200</small>
+            </div>
+
+            <div class="floating-group">
+                <select name="severity" id="severity" required>
+                    <option value="" disabled selected></option>
+                    <option value="Low">🌿 Low</option>
+                    <option value="Medium">⚡ Medium</option>
+                    <option value="High">🔥 High</option>
+                </select>
+                <label>Priority</label>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-animated btn-primary-animated w-100 mt-3">
+                🚀 Create Ticket
+            </button>
+
+        </form>
+
+<!-- TOAST -->
+<div id="toast" class="toast">✅ Ticket Created</div>
+    </div>
+
+</div>
+
+{% endblock %}
