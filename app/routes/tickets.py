@@ -8,6 +8,11 @@ tickets_bp = Blueprint('tickets', __name__)
 @tickets_bp.route("/dashboard")
 @login_required
 def dashboard():
+    search = request.args.get("search", "")
+    severity = request.args.get("severity", "")
+    page = request.args.get("page", 1, type=int)
+    per_page = 6
+    
     query = db.select(Ticket)
 
     if search:
