@@ -1,11 +1,11 @@
-# 🌌 BubbleTicket: Gen-Z IT Support Deck
+# 🚀 SaaS Support Ticket Management System
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.0-black.svg?logo=flask)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-ORM-red.svg)
 ![Pytest](https://img.shields.io/badge/Pytest-Passing-brightgreen.svg)
 
-BubbleTicket is a modern, gamified, and highly interactive IT Support Ticketing System. It completely reimagines the dry, traditional enterprise support deck into a visually stunning, Glassmorphism-powered web application backed by a robust, production-ready Python architecture.
+SaaS Support Ticket Management System is a modern, responsive, and highly interactive IT Support System. It reimagines the traditional enterprise support desk into a visually stunning, Glassmorphism-powered web application backed by a robust, production-ready Python architecture.
 
 ## ✨ Features
 
@@ -28,7 +28,7 @@ BubbleTicket is a modern, gamified, and highly interactive IT Support Ticketing 
 
 ## 🏗️ Architecture
 
-BubbleTicket utilizes a modular **Application Factory** pattern, ensuring scalability and clean separation of concerns.
+The system utilizes a modular **Application Factory** pattern, ensuring scalability and clean separation of concerns.
 
 * **Frontend**: Vanilla HTML5, CSS3 (Glassmorphism), and Vanilla JavaScript (Canvas Physics, Web Audio API).
 * **Backend Framework**: Flask (Python) with Jinja2 Templating and reusable macros.
@@ -80,8 +80,8 @@ project1_ticket_system/
 ### Local Setup
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/BubbleTicket.git
-   cd BubbleTicket
+   git clone https://github.com/yourusername/ticketSystem.git
+   cd ticketSystem
    ```
 
 2. **Create and activate a virtual environment**
