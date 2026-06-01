@@ -1,0 +1,11 @@
+{% macro badge(severity_or_status) %}
+    <span class="badge-minimal badge-{{ severity_or_status|replace(' ', '-') }}">{{ severity_or_status }}</span>
+{% endmacro %}
+
+{% macro glass_button(text, type='submit', custom_class='', href='') %}
+    {% if href %}
+        <a href="{{ href }}" class="btn-glass {{ custom_class }}">{{ text }}</a>
+    {% else %}
+        <button type="{{ type }}" class="btn-glass {{ custom_class }}">{{ text }}</button>
+    {% endif %}
+{% endmacro %}

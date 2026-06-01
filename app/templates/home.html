@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+    <div class="glass-card">
+        <h2 style="margin-bottom: 2rem; font-weight: 600; font-size: 1.8rem; text-align: center;">New Ticket</h2>
+        <form method="POST">
+            <label class="glass-label" for="title">Ticket Title</label>
+            <input type="text" name="title" id="title" class="input-glass" placeholder="e.g. Cannot access database" pattern=".*\S+.*" title="Title cannot be just spaces" maxlength="200" required>
+            
+            <label class="glass-label" for="desc">Issue Description</label>
+            <textarea name="desc" id="desc" class="input-glass" rows="5" placeholder="Provide details about the issue..." required style="resize: vertical;"></textarea>
+            
+            <label class="glass-label" for="severity">Severity Level</label>
+            <select name="severity" id="severity" class="input-glass" required>
+                <option value="Low">Low - Minor issue</option>
+                <option value="Medium">Medium - Degraded performance</option>
+                <option value="High">High - System outage</option>
+            </select>
+            
+            <button type="submit" class="btn-glass" style="width: 100%; margin-top: 1rem; padding: 0.8rem; font-size: 1.1rem;">Launch Ticket</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

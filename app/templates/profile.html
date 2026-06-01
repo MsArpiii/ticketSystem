@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bento-header" style="margin-bottom: 2rem;">
+    <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">My Profile</h2>
+</div>
+
+<div class="form-container">
+    <div class="glass-card" style="padding: 3rem 2.5rem; text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">👤</div>
+        <h2 style="margin-bottom: 0.5rem; font-weight: 700; font-size: 2rem;">{{ current_user.username }}</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1rem;">
+            Role: 
+            {% if current_user.is_admin %}
+                <span class="badge-minimal badge-High">Administrator</span>
+            {% else %}
+                <span class="badge-minimal badge-Low">User</span>
+            {% endif %}
+        </p>
+
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="{{ url_for('tickets.dashboard') }}" class="btn-glass">My Tickets</a>
+            <a href="{{ url_for('auth.logout') }}" class="btn-glass btn-glass-danger">Log Out</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

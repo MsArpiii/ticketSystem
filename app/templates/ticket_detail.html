@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block content %}
+
+<div class="bento-header" style="margin-bottom: 2rem;">
+    <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">Ticket #{{ ticket.id }}</h2>
+    <a href="{{ url_for('tickets.dashboard') }}" class="btn-glass" style="background: rgba(255,255,255,0.05);">Back to Dashboard</a>
+</div>
+
+<div class="form-container">
+    <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <div>
+                {{ macros.badge(ticket.status) }}
+                {{ macros.badge(ticket.severity) }}
+            </div>
+            {% if ticket.assigned_user %}
+            <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); padding: 0.4rem 0.8rem; border-radius: 20px; border: 1px solid var(--glass-border);">
+                <span style="font-size: 1rem;">🧑‍💻</span>
+                <span style="font-size: 0.9rem; font-weight: 500;">{{ ticket.assigned_user.username }}</span>
+            </div>
+            {% endif %}
+        </div>
+        
+        <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.5rem; font-weight: 600;">{{ ticket.title }}</h3>
+        
+        <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--glass-border);">
+            <p style="margin: 0; color: var(--text-secondary); line-height: 1.6; white-space: pre-wrap;">{{ ticket.description }}</p>
+        </div>
+        
+        </div>
+
+        <h4 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-secondary); font-weight: 500;">Ticket History</h4>
+        <div style="display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2rem;">
+            {% for log in history %}
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong style="color: #fff;">{{ log.user.username }}</strong>
+                    <span style="color: var(--text-secondary); margin-left: 0.5rem;">{{ log.action }}</span>
+                </div>
+                <span style="color: var(--text-secondary); font-size: 0.85rem;">{{ log.timestamp }}</span>
+            </div>
+            {% else %}
+            <p style="color: var(--text-secondary); font-style: italic; font-size: 0.9rem;">No history recorded.</p>
+            {% endfor %}
+        </div>
+        
+        {% if current_user.is_admin %}
+        <div style="display: flex; gap: 1rem; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+            <a href="{{ url_for('tickets.edit', id=ticket.id) }}" class="btn-glass" style="flex: 1; text-align: center;">Edit Ticket</a>
+            {% if not ticket.assigned_to_id %}
+            <form action="{{ url_for('tickets.claim', id=ticket.id) }}" method="POST" style="flex: 1; display: flex;">
+                <button type="submit" class="btn-glass" style="width: 100%; border: none; cursor: pointer; font-family: inherit;">Claim Ticket</button>
+            </form>
+            {% endif %}
+            {% if ticket.status != 'Resolved' %}
+            <form action="{{ url_for('tickets.resolve', id=ticket.id) }}" method="POST" style="flex: 1; display: flex;">
+                <button type="submit" class="btn-glass" style="width: 100%; background: rgba(16, 185, 129, 0.2) !important; border-color: rgba(16, 185, 129, 0.4) !important; border: none; cursor: pointer; font-family: inherit;">Resolve</button>
+            </form>
+            {% endif %}
+            <form action="{{ url_for('tickets.delete', id=ticket.id) }}" method="POST" style="flex: 1; display: flex;" onsubmit="return confirm('Delete this ticket?');">
+                <button type="submit" class="btn-glass btn-glass-danger" style="width: 100%; border: none; cursor: pointer; font-family: inherit;">Delete</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container" style="margin-top: 4rem;">
+    <div class="glass-card" style="padding: 3rem 2.5rem;">
+        <h2 style="margin-bottom: 0.5rem; font-weight: 700; font-size: 2rem; text-align: center;">Welcome Back</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 1rem;">Sign in to your account</p>
+
+        <form method="POST">
+            <label class="glass-label" for="username">Username</label>
+            <input type="text" name="username" id="username" class="input-glass" placeholder="admin" pattern=".*\S+.*" title="Username cannot be just spaces" required>
+
+            <label class="glass-label" for="password">Password</label>
+            <input type="password" name="password" id="password" class="input-glass" placeholder="••••••••" required>
+
+            <button type="submit" class="btn-glass" style="width: 100%; margin-top: 1rem; padding: 0.8rem; font-size: 1.1rem;">Sign In</button>
+        </form>
+        
+        <p style="text-align: center; color: var(--text-secondary); margin-top: 2.5rem; font-size: 0.95rem;">
+            Don't have an account? <a href="{{ url_for('auth.register') }}" style="color: #fff; text-decoration: none; font-weight: 600; text-shadow: 0 0 10px rgba(255,255,255,0.3);">Register</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

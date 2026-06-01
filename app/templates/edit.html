@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-container">
+    <div class="glass-card">
+        <h2 style="margin-bottom: 2rem; font-weight: 600; font-size: 1.8rem; text-align: center;">Edit Ticket #{{ ticket.id }}</h2>
+        <form method="POST">
+            <label class="glass-label" for="title">Ticket Title</label>
+            <input type="text" name="title" id="title" class="input-glass" value="{{ ticket.title }}" pattern=".*\S+.*" title="Title cannot be just spaces" maxlength="200" required>
+            
+            <label class="glass-label" for="desc">Issue Description</label>
+            <textarea name="desc" id="desc" class="input-glass" rows="5" required style="resize: vertical;">{{ ticket.description }}</textarea>
+            
+            <label class="glass-label" for="severity">Severity Level</label>
+            <select name="severity" id="severity" class="input-glass" required>
+                <option value="Low" {% if ticket.severity == 'Low' %}selected{% endif %}>Low - Minor issue</option>
+                <option value="Medium" {% if ticket.severity == 'Medium' %}selected{% endif %}>Medium - Degraded performance</option>
+                <option value="High" {% if ticket.severity == 'High' %}selected{% endif %}>High - System outage</option>
+            </select>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <a href="{{ url_for('tickets.dashboard') }}" class="btn-glass" style="flex: 1; text-align: center; background: rgba(255,255,255,0.05);">Cancel</a>
+                <button type="submit" class="btn-glass" style="flex: 2;">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

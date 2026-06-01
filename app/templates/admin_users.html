@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bento-header" style="margin-bottom: 2rem;">
+    <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">User Management</h2>
+</div>
+
+<div class="bento-grid">
+    {% for u in users %}
+    <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <span style="font-family: monospace; color: var(--text-secondary); font-size: 0.9rem;">ID: {{ u['id'] }}</span>
+            {% if u['is_admin'] %}
+                <span class="badge-minimal badge-High">Admin</span>
+            {% else %}
+                <span class="badge-minimal badge-Low">User</span>
+            {% endif %}
+        </div>
+        
+        <h3 style="font-size: 1.5rem; font-weight: 600; margin: 0;">{{ u['username'] }}</h3>
+        
+        <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
+            <!-- Placeholder for promote/delete actions -->
+            <button class="btn-glass" style="padding: 0.3rem 0.8rem; font-size: 0.8rem; opacity: 0.5;" disabled>Actions Locked</button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

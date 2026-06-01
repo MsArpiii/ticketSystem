@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="bento-header" style="margin-bottom: 2rem;">
+    <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">System Analytics</h2>
+</div>
+
+<div class="bento-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+    
+    <!-- Total Tickets -->
+    <div class="glass-card" style="text-align: center; padding: 2.5rem 2rem;">
+        <h3 style="color: var(--text-secondary); font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Total Tickets</h3>
+        <div style="font-size: 4rem; font-weight: 700; line-height: 1;">{{ total }}</div>
+    </div>
+    
+    <!-- Open Tickets -->
+    <div class="glass-card" style="text-align: center; padding: 2.5rem 2rem;">
+        <h3 style="color: var(--text-secondary); font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Open</h3>
+        <div style="font-size: 4rem; font-weight: 700; line-height: 1; color: var(--badge-open);">{{ open }}</div>
+    </div>
+    
+    <!-- Resolved Tickets -->
+    <div class="glass-card" style="text-align: center; padding: 2.5rem 2rem;">
+        <h3 style="color: var(--text-secondary); font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Resolved</h3>
+        <div style="font-size: 4rem; font-weight: 700; line-height: 1; color: var(--badge-resolved);">{{ resolved }}</div>
+    </div>
+</div>
+
+<div class="bento-header" style="margin-top: 3.5rem; margin-bottom: 1.5rem;">
+    <h3 style="margin: 0; font-size: 1.4rem; font-weight: 600;">Severity Breakdown</h3>
+</div>
+
+<div class="bento-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+    {% for sev in severity_data %}
+    <div class="glass-card" style="padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="badge-minimal badge-{{ sev.severity }}" style="font-size: 1rem;">{{ sev.severity }}</span>
+            <span style="font-size: 2rem; font-weight: 700;">{{ sev.count }}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

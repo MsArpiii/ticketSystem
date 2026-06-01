@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bento-header" style="margin-bottom: 2rem;">
+    <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">Knowledge Base (FAQ)</h2>
+</div>
+
+<div class="bento-grid">
+    <div class="glass-card">
+        <h3 style="font-size: 1.2rem; font-weight: 600; margin-top: 0;">How do I reset my password?</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 0;">Currently, you must contact your IT administrator to perform a manual password reset in the database.</p>
+    </div>
+    
+    <div class="glass-card">
+        <h3 style="font-size: 1.2rem; font-weight: 600; margin-top: 0;">The database is inaccessible</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 0;">Check your VPN connection. If you are on the corporate network and still cannot access it, submit a High severity ticket.</p>
+    </div>
+
+    <div class="glass-card">
+        <h3 style="font-size: 1.2rem; font-weight: 600; margin-top: 0;">How do I create a ticket?</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 0;">Click "New" in the navbar, fill out the title and description, select the severity level, and submit.</p>
+    </div>
+
+    <div class="glass-card">
+        <h3 style="font-size: 1.2rem; font-weight: 600; margin-top: 0;">Can I edit a ticket?</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 0;">Only Administrators can edit or delete tickets. Standard users can only view tickets once submitted.</p>
+    </div>
+</div>
+{% endblock %}

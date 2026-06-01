@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+{% block content %}
+
+<div class="bento-header">
+    <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">Ticket Deck</h2>
+    <a href="{{ url_for('main.home') }}" class="btn-glass">+ Create Ticket</a>
+</div>
+
+<div class="bento-grid">
+    {% for t in tickets %}
+    <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div>
+                <span style="font-family: monospace; color: var(--text-secondary); font-size: 0.9rem; margin-right: 0.5rem;">#{{ t.id }}</span>
+                {{ macros.badge(t.status) }}
+            </div>
+            {% if t.assigned_user %}
+                <span style="font-size: 0.85rem; color: var(--text-secondary); background: rgba(255,255,255,0.05); padding: 0.2rem 0.5rem; border-radius: 4px;">🧑‍💻 {{ t.assigned_user.username }}</span>
+            {% else %}
+                {{ macros.badge(t.severity) }}
+            {% endif %}
+        </div>
+        
+        <a href="{{ url_for('tickets.view', id=t.id) }}" class="ticket-title">{{ t.title }}</a>
+        <p class="ticket-desc" style="margin-top: 0.5rem;">{{ t.description }}</p>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
+            <span class="badge-minimal badge-{{ t.severity }}">{{ t.severity }}</span>
+            
+            <div style="display: flex; gap: 0.5rem;">
+                {% if t.status == 'Open' and current_user.is_admin %}
+                <a href="{{ url_for('tickets.resolve', id=t.id) }}" class="btn-glass" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Resolve</a>
+                {% endif %}
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('tickets.delete', id=t.id) }}" class="btn-glass btn-glass-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Delete</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-primary); padding: 4rem; background: var(--glass-bg); backdrop-filter: blur(12px); border-radius: 20px; border: 1px dashed var(--glass-border);">
+        <h3 style="margin-bottom: 1rem;">No tickets here!</h3>
+        <p style="color: var(--text-secondary);">Create one to get started.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- PAGINATION CONTROLS -->
+{% if total_pages > 1 %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+    <span style="color: var(--text-secondary); font-size: 1rem; font-weight: 500;">Page {{ page }} of {{ total_pages }}</span>
+    <div style="display: flex; gap: 0.5rem;">
+        {% if page > 1 %}
+            <a href="{{ url_for('tickets.dashboard', page=page-1, search=search, severity=severity) }}" class="btn-glass">Prev</a>
+        {% else %}
+            <button class="btn-glass" style="opacity: 0.3; cursor: not-allowed;" disabled>Prev</button>
+        {% endif %}
+
+        {% if page < total_pages %}
+            <a href="{{ url_for('tickets.dashboard', page=page+1, search=search, severity=severity) }}" class="btn-glass">Next</a>
+        {% else %}
+            <button class="btn-glass" style="opacity: 0.3; cursor: not-allowed;" disabled>Next</button>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
