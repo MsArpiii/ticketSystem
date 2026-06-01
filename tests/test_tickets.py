@@ -1,5 +1,5 @@
 from app.models import db, Ticket
-from flask import session
+
 
 def test_unauthorized_dashboard_access(client):
     response = client.get('/dashboard')

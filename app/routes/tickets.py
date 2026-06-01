@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app.models import db, Ticket, TicketHistory, User
+from app.models import db, Ticket, TicketHistory
 from sqlalchemy.exc import SQLAlchemyError
 
 tickets_bp = Blueprint('tickets', __name__)

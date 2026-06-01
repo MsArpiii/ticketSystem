@@ -1,4 +1,4 @@
-import pytest
+
 from app.utils import auto_triage_severity
 
 def test_auto_triage_high_severity():
