@@ -1,31 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="page-header">
-    <h2 class="page-title">New Issue</h2>
-</div>
-
-<div class="card" style="max-width: 600px;">
-    <form method="POST">
-        <div class="form-group">
-            <label class="form-label" for="title">Title</label>
-            <input type="text" name="title" id="title" class="form-control" placeholder="e.g. Cannot access database" pattern=".*\S+.*" title="Title cannot be just spaces" maxlength="200" required>
-        </div>
-        
-        <div class="form-group">
-            <label class="form-label" for="desc">Description</label>
-            <textarea name="desc" id="desc" class="form-control" rows="5" placeholder="Provide details about the issue..." required></textarea>
-        </div>
-        
-        <div class="form-group mb-4">
-            <label class="form-label" for="severity">Severity</label>
-            <select name="severity" id="severity" class="form-control" required>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
+<div class="form-container">
+    <div class="glass-card">
+        <h2 style="margin-bottom: 2rem; font-weight: 600; font-size: 1.8rem; text-align: center;">New Ticket</h2>
+        <form method="POST">
+            <label class="glass-label" for="title">Ticket Title</label>
+            <input type="text" name="title" id="title" class="input-glass" placeholder="e.g. Cannot access database" pattern=".*\S+.*" title="Title cannot be just spaces" maxlength="200" required>
+            
+            <label class="glass-label" for="desc">Issue Description</label>
+            <textarea name="desc" id="desc" class="input-glass" rows="5" placeholder="Provide details about the issue..." required style="resize: vertical;"></textarea>
+            
+            <label class="glass-label" for="severity">Severity Level</label>
+            <select name="severity" id="severity" class="input-glass" required>
+                <option value="Low">Low - Minor issue</option>
+                <option value="Medium">Medium - Degraded performance</option>
+                <option value="High">High - System outage</option>
             </select>
-        </div>
-        
-        <button type="submit" class="btn btn-primary w-full">Create Issue</button>
-    </form>
+            
+            <button type="submit" class="btn-glass" style="width: 100%; margin-top: 1rem; padding: 0.8rem; font-size: 1.1rem;">Launch Ticket</button>
+        </form>
+    </div>
 </div>
 {% endblock %}
