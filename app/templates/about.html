@@ -1,22 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="bento-header" style="margin-bottom: 2rem;">
-    <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">About This Project</h2>
+<div class="page-header">
+    <h2 class="page-title">About This Project</h2>
 </div>
 
-<div class="form-container">
-    <div class="glass-card" style="padding: 2.5rem; text-align: center;">
-        <div style="font-size: 3.5rem; margin-bottom: 1rem;">🚀</div>
-        <h3 style="margin-top: 0; font-weight: 600;">SaaS Support System v3</h3>
-        <p style="color: var(--text-secondary); line-height: 1.6;">
-            A next-generation IT Helpdesk built with Flask, SQLite, and Web Audio API. 
-            Designed to bring fun and gamification to the enterprise software space with interactive bubble physics and satisfying haptics.
-        </p>
-        
-        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--glass-border);">
-            <a href="{{ url_for('main.home') }}" class="btn-glass">Back to Home</a>
-        </div>
+<div class="card text-center" style="padding: 3rem 2.5rem; max-width: 600px; margin: 0 auto;">
+    <div style="font-size: 3.5rem; margin-bottom: 1rem;">💼</div>
+    <h3 style="margin-top: 0; font-weight: 600; font-size: 1.5rem; margin-bottom: 1rem;">SaaS Support System</h3>
+    <p class="text-secondary" style="line-height: 1.6; margin-bottom: 2rem;">
+        A modern, professional IT Helpdesk built with Flask and SQLite. 
+        Designed for clean, efficient ticket management and team collaboration.
+    </p>
+    
+    <div style="border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+        <a href="{{ url_for('main.home') }}" class="btn btn-secondary">Back to Dashboard</a>
     </div>
 </div>
 {% endblock %}

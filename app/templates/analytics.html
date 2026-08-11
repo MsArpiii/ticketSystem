@@ -1,42 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="bento-header" style="margin-bottom: 2rem;">
-    <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">System Analytics</h2>
+<div class="page-header">
+    <h2 class="page-title">System Analytics</h2>
 </div>
 
-<div class="bento-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
-    
+<div class="dashboard-grid mb-4">
     <!-- Total Tickets -->
-    <div class="glass-card" style="text-align: center; padding: 2.5rem 2rem;">
-        <h3 style="color: var(--text-secondary); font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Total Tickets</h3>
-        <div style="font-size: 4rem; font-weight: 700; line-height: 1;">{{ total }}</div>
+    <div class="card text-center" style="padding: 2.5rem 2rem;">
+        <h3 class="text-secondary" style="font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Total Tickets</h3>
+        <div style="font-size: 3rem; font-weight: 700; color: var(--text-primary); line-height: 1;">{{ total }}</div>
     </div>
     
     <!-- Open Tickets -->
-    <div class="glass-card" style="text-align: center; padding: 2.5rem 2rem;">
-        <h3 style="color: var(--text-secondary); font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Open</h3>
-        <div style="font-size: 4rem; font-weight: 700; line-height: 1; color: var(--badge-open);">{{ open }}</div>
+    <div class="card text-center" style="padding: 2.5rem 2rem;">
+        <h3 class="text-secondary" style="font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Open</h3>
+        <div style="font-size: 3rem; font-weight: 700; color: var(--status-open-text); line-height: 1;">{{ open }}</div>
     </div>
     
     <!-- Resolved Tickets -->
-    <div class="glass-card" style="text-align: center; padding: 2.5rem 2rem;">
-        <h3 style="color: var(--text-secondary); font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem;">Resolved</h3>
-        <div style="font-size: 4rem; font-weight: 700; line-height: 1; color: var(--badge-resolved);">{{ resolved }}</div>
+    <div class="card text-center" style="padding: 2.5rem 2rem;">
+        <h3 class="text-secondary" style="font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Resolved</h3>
+        <div style="font-size: 3rem; font-weight: 700; color: var(--status-resolved-text); line-height: 1;">{{ resolved }}</div>
     </div>
 </div>
 
-<div class="bento-header" style="margin-top: 3.5rem; margin-bottom: 1.5rem;">
-    <h3 style="margin: 0; font-size: 1.4rem; font-weight: 600;">Severity Breakdown</h3>
-</div>
+<h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">Severity Breakdown</h3>
 
-<div class="bento-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+<div class="dashboard-grid">
     {% for sev in severity_data %}
-    <div class="glass-card" style="padding: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span class="badge-minimal badge-{{ sev.severity }}" style="font-size: 1rem;">{{ sev.severity }}</span>
-            <span style="font-size: 2rem; font-weight: 700;">{{ sev.count }}</span>
-        </div>
+    <div class="card" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 1.5rem;">
+        <span class="badge badge-severity-{{ sev.severity }}">{{ sev.severity }}</span>
+        <span style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">{{ sev.count }}</span>
     </div>
     {% endfor %}
 </div>

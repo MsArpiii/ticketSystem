@@ -2,65 +2,67 @@
 {% import "_macros.html" as macros %}
 {% block content %}
 
-<div class="bento-header">
-    <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">Ticket Deck</h2>
-    <a href="{{ url_for('main.home') }}" class="btn-glass">+ Create Ticket</a>
+<div class="page-header">
+    <h2 class="page-title">Issues</h2>
+    <a href="{{ url_for('main.home') }}" class="btn btn-primary">+ New Issue</a>
 </div>
 
-<div class="bento-grid">
+<div class="dashboard-grid">
     {% for t in tickets %}
-    <div class="glass-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <div>
-                <span style="font-family: monospace; color: var(--text-secondary); font-size: 0.9rem; margin-right: 0.5rem;">#{{ t.id }}</span>
+    <div class="card">
+        <div class="card-header">
+            <span class="ticket-id">#{{ t.id }}</span>
+            <div class="flex gap-2">
                 {{ macros.badge(t.status) }}
             </div>
-            {% if t.assigned_user %}
-                <span style="font-size: 0.85rem; color: var(--text-secondary); background: rgba(255,255,255,0.05); padding: 0.2rem 0.5rem; border-radius: 4px;">🧑‍💻 {{ t.assigned_user.username }}</span>
-            {% else %}
-                {{ macros.badge(t.severity) }}
-            {% endif %}
         </div>
         
         <a href="{{ url_for('tickets.view', id=t.id) }}" class="ticket-title">{{ t.title }}</a>
-        <p class="ticket-desc" style="margin-top: 0.5rem;">{{ t.description }}</p>
+        <p class="ticket-desc">{{ t.description }}</p>
         
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
-            <span class="badge-minimal badge-{{ t.severity }}">{{ t.severity }}</span>
+        <div class="card-footer">
+            <span class="badge badge-severity-{{ t.severity }}">{{ t.severity }}</span>
             
-            <div style="display: flex; gap: 0.5rem;">
+            <div class="flex gap-2 items-center">
+                {% if t.assigned_user %}
+                    <span class="assignee">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        {{ t.assigned_user.username }}
+                    </span>
+                {% endif %}
+                
                 {% if t.status == 'Open' and current_user.is_admin %}
-                <a href="{{ url_for('tickets.resolve', id=t.id) }}" class="btn-glass" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Resolve</a>
+                <a href="{{ url_for('tickets.resolve', id=t.id) }}" class="btn btn-secondary btn-sm">Resolve</a>
                 {% endif %}
                 {% if current_user.is_admin %}
-                <a href="{{ url_for('tickets.delete', id=t.id) }}" class="btn-glass btn-glass-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Delete</a>
+                <a href="{{ url_for('tickets.delete', id=t.id) }}" class="btn btn-danger btn-sm">Delete</a>
                 {% endif %}
             </div>
         </div>
     </div>
     {% else %}
-    <div style="grid-column: 1 / -1; text-align: center; color: var(--text-primary); padding: 4rem; background: var(--glass-bg); backdrop-filter: blur(12px); border-radius: 20px; border: 1px dashed var(--glass-border);">
-        <h3 style="margin-bottom: 1rem;">No tickets here!</h3>
-        <p style="color: var(--text-secondary);">Create one to get started.</p>
+    <div class="empty-state" style="grid-column: 1 / -1;">
+        <h3 class="mb-2">No tickets found</h3>
+        <p>Create a new ticket to get started.</p>
     </div>
     {% endfor %}
 </div>
 
 <!-- PAGINATION CONTROLS -->
 {% if total_pages > 1 %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
-    <span style="color: var(--text-secondary); font-size: 1rem; font-weight: 500;">Page {{ page }} of {{ total_pages }}</span>
-    <div style="display: flex; gap: 0.5rem;">
+<div class="flex justify-between items-center mt-4 pt-4" style="border-top: 1px solid var(--border-color);">
+    <span class="text-secondary" style="font-size: 0.875rem;">Page {{ page }} of {{ total_pages }}</span>
+    <div class="flex gap-2">
         {% if page > 1 %}
-            <a href="{{ url_for('tickets.dashboard', page=page-1, search=search, severity=severity) }}" class="btn-glass">Prev</a>
+            <a href="{{ url_for('tickets.dashboard', page=page-1, search=search, severity=severity) }}" class="btn btn-secondary">Previous</a>
         {% else %}
-            <button class="btn-glass" style="opacity: 0.3; cursor: not-allowed;" disabled>Prev</button>
+            <button class="btn btn-secondary" disabled style="opacity: 0.5; cursor: not-allowed;">Previous</button>
         {% endif %}
 
         {% if page < total_pages %}
-            <a href="{{ url_for('tickets.dashboard', page=page+1, search=search, severity=severity) }}" class="btn-glass">Next</a>
+            <a href="{{ url_for('tickets.dashboard', page=page+1, search=search, severity=severity) }}" class="btn btn-secondary">Next</a>
         {% else %}
-            <button class="btn-glass" style="opacity: 0.3; cursor: not-allowed;" disabled>Next</button>
+            <button class="btn btn-secondary" disabled style="opacity: 0.5; cursor: not-allowed;">Next</button>
         {% endif %}
     </div>
 </div>
