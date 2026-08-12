@@ -92,6 +92,120 @@ if (soundToggleBtn) {
     });
 }
 
+// Theme Toggle Logic
+const themeToggleBtn = document.getElementById('themeToggle');
+const currentTheme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', currentTheme);
+if (themeToggleBtn) {
+    themeToggleBtn.textContent = currentTheme === 'light' ? '☀️ Light' : '🌙 Dark';
+    themeToggleBtn.addEventListener('click', () => {
+        let theme = document.documentElement.getAttribute('data-theme');
+        theme = theme === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        themeToggleBtn.textContent = theme === 'light' ? '☀️ Light' : '🌙 Dark';
+        if (soundEnabled) playSound('pop');
+    });
+}
+
+// ==========================================
+// 🌊 NAVBAR SCROLL & SLIDING INDICATOR
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    const navbar = document.querySelector('.navbar');
+    
+    if (navbar) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
+            }
+        });
+        // Init check
+        if (window.scrollY > 20) navbar.classList.add('navbar-scrolled');
+    }
+
+    const navLinksContainer = document.querySelector('.nav-links');
+    const indicator = document.querySelector('.nav-indicator');
+    const activeLink = document.querySelector('.nav-links a.active');
+
+    function updateIndicator(link) {
+        if(!link || !indicator || !navLinksContainer) return;
+        const linkRect = link.getBoundingClientRect();
+        const containerRect = navLinksContainer.getBoundingClientRect();
+        indicator.style.width = `${linkRect.width}px`;
+        indicator.style.transform = `translateX(${linkRect.left - containerRect.left}px)`;
+    }
+
+    if (activeLink) {
+        // slight delay to ensure fonts/layout are fully loaded
+        setTimeout(() => updateIndicator(activeLink), 100);
+    }
+
+    if (navLinksContainer) {
+        const links = document.querySelectorAll('.nav-links a');
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => updateIndicator(link));
+        });
+
+        navLinksContainer.addEventListener('mouseleave', () => {
+            if (activeLink) {
+                updateIndicator(activeLink);
+            } else {
+                indicator.style.width = '0px';
+            }
+        });
+    }
+
+    // ==========================================
+    // 🔔 NOTIFICATIONS
+    // ==========================================
+    const notifToggle = document.getElementById('notificationToggle');
+    const notifDropdown = document.getElementById('notificationDropdown');
+    const notifBadge = document.getElementById('notifBadge');
+    
+    if (notifToggle && notifDropdown) {
+        notifToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notifDropdown.classList.toggle('show');
+            if (soundEnabled) playSound('pop');
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (!notifDropdown.contains(e.target) && !notifToggle.contains(e.target)) {
+                notifDropdown.classList.remove('show');
+            }
+        });
+        
+        const notifItems = document.querySelectorAll('.notification-item');
+        notifItems.forEach(item => {
+            item.addEventListener('click', async () => {
+                const notifId = item.dataset.id;
+                try {
+                    const response = await fetch(`/api/v1/notifications/${notifId}/read`, {
+                        method: 'POST'
+                    });
+                    if (response.ok) {
+                        item.style.opacity = '0.5';
+                        setTimeout(() => item.remove(), 300);
+                        if (notifBadge) {
+                            let count = parseInt(notifBadge.textContent) - 1;
+                            if (count <= 0) {
+                                notifBadge.remove();
+                            } else {
+                                notifBadge.textContent = count;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to mark notification as read", e);
+                }
+            });
+        });
+    }
+});
+
 // ==========================================
 // 🫧 INTERACTIVE PHYSICS CANVAS (Bubbles)
 // ==========================================

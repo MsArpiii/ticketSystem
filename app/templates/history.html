@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bento-header" style="margin-bottom: 2rem;">
+    <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">My Ticket History</h2>
+</div>
+
+<div class="bento-grid" style="grid-template-columns: 1fr;">
+    {% if tickets %}
+        <div class="glass-card" style="padding: 0; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead style="background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--glass-border);">
+                    <tr>
+                        <th style="padding: 1rem 1.5rem; color: var(--text-secondary); font-weight: 600;">Ticket</th>
+                        <th style="padding: 1rem 1.5rem; color: var(--text-secondary); font-weight: 600;">Status</th>
+                        <th style="padding: 1rem 1.5rem; color: var(--text-secondary); font-weight: 600;">Created</th>
+                        <th style="padding: 1rem 1.5rem; color: var(--text-secondary); font-weight: 600;">Resolved</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                    <tr style="border-bottom: 1px solid var(--glass-border); transition: background 0.2s;">
+                        <td style="padding: 1rem 1.5rem;">
+                            <a href="{{ url_for('tickets.view', id=ticket.id) }}" style="color: var(--text-primary); text-decoration: none; font-weight: 500;">
+                                #{{ ticket.id }} - {{ ticket.title }}
+                            </a>
+                        </td>
+                        <td style="padding: 1rem 1.5rem;">
+                            <span class="badge-minimal badge-{{ ticket.status | replace(' ', '-') }}">{{ ticket.status }}</span>
+                        </td>
+                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ ticket.created_at }}</td>
+                        <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">
+                            {% if ticket.resolved_at %}
+                                {{ ticket.resolved_at.strftime('%Y-%m-%d %H:%M') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="glass-card" style="text-align: center; padding: 4rem 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">📭</div>
+            <h3 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">No Ticket History</h3>
+            <p style="color: var(--text-secondary); margin: 0;">You haven't created any tickets yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

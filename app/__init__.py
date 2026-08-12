@@ -99,4 +99,13 @@ def create_app():
     def internal_server_error(e):
         return render_template("errors/500.html"), 500
 
+    @app.context_processor
+    def inject_notifications():
+        from flask_login import current_user
+        if current_user.is_authenticated:
+            from app.models import Notification
+            unread = db.session.query(Notification).filter_by(user_id=current_user.id, is_read=False).order_by(Notification.created_at.desc()).all()
+            return dict(unread_notifications=unread, unread_count=len(unread))
+        return dict(unread_notifications=[], unread_count=0)
+
     return app

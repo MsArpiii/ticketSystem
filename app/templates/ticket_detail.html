@@ -27,8 +27,6 @@
         <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; border: 1px solid var(--glass-border);">
             <p style="margin: 0; color: var(--text-secondary); line-height: 1.6; white-space: pre-wrap;">{{ ticket.description }}</p>
         </div>
-        
-        </div>
 
         <h4 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-secondary); font-weight: 500;">Ticket History</h4>
         <div style="display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2rem;">
@@ -44,7 +42,33 @@
             <p style="color: var(--text-secondary); font-style: italic; font-size: 0.9rem;">No history recorded.</p>
             {% endfor %}
         </div>
+
+        <h4 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-secondary); font-weight: 500;">Comments</h4>
+        <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+            {% for comment in ticket.comments %}
+            <div style="background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+                    <strong style="color: var(--text-primary); font-size: 1.05rem;">{{ comment.user.username }}</strong>
+                    <span style="color: var(--text-secondary); font-size: 0.85rem;">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+                <p style="margin: 0; color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap;">{{ comment.comment_text }}</p>
+            </div>
+            {% else %}
+            <p style="color: var(--text-secondary); font-style: italic; font-size: 0.9rem;">No comments yet.</p>
+            {% endfor %}
+        </div>
         
+        {% if current_user.id == ticket.creator_id or current_user.id == ticket.assigned_to_id or current_user.is_admin %}
+        <div style="background: var(--glass-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 2rem;">
+            <form action="{{ url_for('tickets.add_comment', id=ticket.id) }}" method="POST">
+                <label for="comment_text" class="glass-label">Add a Comment</label>
+                <textarea name="comment_text" id="comment_text" class="input-glass" rows="3" placeholder="Type your comment here..." required style="resize: vertical;"></textarea>
+                <button type="submit" class="btn-glass" style="width: 100%;">Post Comment</button>
+            </form>
+        </div>
+        {% endif %}
+        
+
         {% if current_user.is_admin %}
         <div style="display: flex; gap: 1rem; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
             <a href="{{ url_for('tickets.edit', id=ticket.id) }}" class="btn-glass" style="flex: 1; text-align: center;">Edit Ticket</a>

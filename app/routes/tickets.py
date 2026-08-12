@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app.models import db, Ticket, TicketHistory, TicketAuditLog
+from app.models import db, Ticket, TicketHistory, TicketAuditLog, Notification
 from sqlalchemy.exc import SQLAlchemyError
 
 tickets_bp = Blueprint('tickets', __name__)
@@ -106,6 +106,12 @@ def resolve(id):
             
             log = TicketHistory(ticket_id=ticket.id, user_id=current_user.id, action="Resolved Ticket")
             db.session.add(log)
+            
+            # Create Notification
+            if ticket.creator_id != current_user.id:
+                notif = Notification(user_id=ticket.creator_id, message=f"Your ticket #{ticket.id} was resolved.")
+                db.session.add(notif)
+                
             db.session.commit()
             flash("✔ Ticket Resolved")
         except SQLAlchemyError:
@@ -161,6 +167,12 @@ def edit(id):
             ticket.severity = severity
             log = TicketHistory(ticket_id=ticket.id, user_id=current_user.id, action="Edited Ticket details")
             db.session.add(log)
+            
+            # Create Notification
+            if ticket.creator_id != current_user.id:
+                notif = Notification(user_id=ticket.creator_id, message=f"Your ticket #{ticket.id} was updated.")
+                db.session.add(notif)
+                
             db.session.commit()
             flash("✏ Ticket Updated")
             return redirect(url_for("tickets.dashboard"))
@@ -214,9 +226,58 @@ def claim(id):
             
             log = TicketHistory(ticket_id=ticket.id, user_id=current_user.id, action="Claimed Ticket & marked In Progress")
             db.session.add(log)
+            
+            # Create Notification
+            if ticket.creator_id != current_user.id:
+                notif = Notification(user_id=ticket.creator_id, message=f"Your ticket #{ticket.id} was claimed by {current_user.username}.")
+                db.session.add(notif)
+                
             db.session.commit()
             flash("🤝 Ticket Claimed!")
         except SQLAlchemyError:
             db.session.rollback()
             flash("❌ A database error occurred while claiming.", "danger")
     return redirect(url_for("tickets.dashboard"))
+
+@tickets_bp.route("/history")
+@login_required
+def history():
+    user_tickets = db.session.query(Ticket).filter_by(creator_id=current_user.id).order_by(Ticket.created_at.desc()).all()
+    return render_template("history.html", tickets=user_tickets)
+
+@tickets_bp.route("/comment/<int:id>", methods=["POST"])
+@login_required
+def add_comment(id):
+    ticket = db.session.get(Ticket, id)
+    if not ticket:
+        flash("❌ Ticket not found.", "danger")
+        return redirect(url_for("tickets.dashboard"))
+        
+    if current_user.id != ticket.creator_id and current_user.id != ticket.assigned_to_id and not current_user.is_admin:
+        flash("❌ Unauthorized.", "danger")
+        return redirect(url_for("tickets.view", id=id))
+        
+    comment_text = request.form.get("comment_text", "").strip()
+    if not comment_text:
+        flash("❌ Comment cannot be empty.", "danger")
+        return redirect(url_for("tickets.view", id=id))
+        
+    from app.models import TicketComment
+    new_comment = TicketComment(ticket_id=ticket.id, user_id=current_user.id, comment_text=comment_text)
+    db.session.add(new_comment)
+    
+    if current_user.id != ticket.creator_id:
+        notif1 = Notification(user_id=ticket.creator_id, message=f"New comment on ticket #{ticket.id} by {current_user.username}")
+        db.session.add(notif1)
+    if ticket.assigned_to_id and current_user.id != ticket.assigned_to_id:
+        notif2 = Notification(user_id=ticket.assigned_to_id, message=f"New comment on ticket #{ticket.id} by {current_user.username}")
+        db.session.add(notif2)
+        
+    try:
+        db.session.commit()
+        flash("💬 Comment added")
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash("❌ Error adding comment.", "danger")
+        
+    return redirect(url_for("tickets.view", id=id))

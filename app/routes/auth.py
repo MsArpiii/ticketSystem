@@ -77,7 +77,9 @@ def logout():
 @auth_bp.route("/profile")
 @login_required
 def profile():
-    return render_template("profile.html")
+    from app.models import Ticket
+    ticket_count = db.session.query(Ticket).filter_by(creator_id=current_user.id).count()
+    return render_template("profile.html", ticket_count=ticket_count)
 
 @auth_bp.route("/admin/users")
 @login_required

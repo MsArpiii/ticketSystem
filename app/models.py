@@ -12,6 +12,7 @@ class User(db.Model, UserMixin):
     username: Mapped[str] = mapped_column(unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     role: Mapped[str] = mapped_column(default='user')
+    created_at: Mapped[Optional[datetime]] = mapped_column(default=datetime.now, nullable=True)
 
     @property
     def is_admin(self) -> bool:
@@ -58,3 +59,24 @@ class TicketAuditLog(db.Model):
 
     ticket = db.relationship('Ticket')
     changed_by = db.relationship('User')
+
+class Notification(db.Model):
+    __tablename__ = 'notifications'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(db.ForeignKey('users.id'), nullable=False)
+    message: Mapped[str] = mapped_column(nullable=False)
+    is_read: Mapped[bool] = mapped_column(default=False)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+
+    user = db.relationship('User', backref=db.backref('notifications', lazy=True, cascade="all, delete"))
+
+class TicketComment(db.Model):
+    __tablename__ = 'ticket_comments'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    ticket_id: Mapped[int] = mapped_column(db.ForeignKey('tickets.id'), nullable=False)
+    user_id: Mapped[int] = mapped_column(db.ForeignKey('users.id'), nullable=False)
+    comment_text: Mapped[str] = mapped_column(nullable=False)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+
+    ticket = db.relationship('Ticket', backref=db.backref('comments', lazy=True, cascade="all, delete"))
+    user = db.relationship('User')

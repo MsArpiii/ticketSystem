@@ -9,13 +9,19 @@
     <div class="glass-card" style="padding: 3rem 2.5rem; text-align: center;">
         <div style="font-size: 4rem; margin-bottom: 1rem;">👤</div>
         <h2 style="margin-bottom: 0.5rem; font-weight: 700; font-size: 2rem;">{{ current_user.username }}</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 1rem;">
+        <p style="color: var(--text-secondary); margin-bottom: 0.5rem; font-size: 1rem;">
             Role: 
             {% if current_user.is_admin %}
                 <span class="badge-minimal badge-High">Administrator</span>
             {% else %}
                 <span class="badge-minimal badge-Low">User</span>
             {% endif %}
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 0.5rem; font-size: 1rem;">
+            Tickets Created: <strong>{{ ticket_count }}</strong>
+        </p>
+        <p style="color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 1rem;">
+            Account Created: <strong>{{ current_user.created_at.strftime('%B %d, %Y') if current_user.created_at else 'Unknown' }}</strong>
         </p>
 
         <div style="display: flex; gap: 1rem; justify-content: center;">

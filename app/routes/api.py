@@ -33,3 +33,15 @@ def get_tickets():
         "count": len(ticket_list),
         "data": ticket_list
     }), 200
+
+@api_bp.route('/notifications/<int:id>/read', methods=['POST'])
+@login_required
+def read_notification(id):
+    from app.models import Notification
+    from flask_login import current_user
+    notif = db.session.get(Notification, id)
+    if notif and notif.user_id == current_user.id:
+        notif.is_read = True
+        db.session.commit()
+        return jsonify({"status": "success"}), 200
+    return jsonify({"status": "error", "message": "Notification not found or unauthorized"}), 404

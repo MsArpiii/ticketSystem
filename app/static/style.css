@@ -1,5 +1,9 @@
 /* Google Font is now loaded via preconnect link in base.html for performance */
 
+* {
+    box-sizing: border-box;
+}
+
 :root {
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
@@ -12,6 +16,17 @@
     --badge-low: #00e676;
     --badge-open: #40c4ff;
     --badge-resolved: #b0bec5;
+    
+    --bg-gradient: linear-gradient(45deg, #1e003b, #4b0082, #001f3f, #004d40);
+}
+
+[data-theme="light"] {
+    --text-primary: #0f172a;
+    --text-secondary: rgba(15, 23, 42, 0.7);
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.8);
+    --glass-hover: rgba(255, 255, 255, 0.9);
+    --bg-gradient: linear-gradient(45deg, #e2e8f0, #f8fafc, #cbd5e1, #94a3b8);
 }
 
 body {
@@ -19,7 +34,7 @@ body {
     font-family: 'Outfit', sans-serif;
     color: var(--text-primary);
     min-height: 100vh;
-    background: linear-gradient(45deg, #1e003b, #4b0082, #001f3f, #004d40);
+    background: var(--bg-gradient);
     background-size: 200% 200%;
     animation: gradientBG 15s ease infinite;
     will-change: background-position;
@@ -45,17 +60,28 @@ body {
 
 /* NAVBAR */
 .navbar {
-    background: rgba(0, 0, 0, 0.2) !important;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: transparent !important;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    border-bottom: 1px solid transparent;
+    padding: 1.5rem 2rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.navbar.navbar-scrolled {
+    background: var(--glass-bg) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--glass-border);
-    padding: 1rem 2rem;
-    position: relative;
-    z-index: 10;
+    padding: 0.8rem 2rem;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.1);
 }
 
 .navbar-brand {
-    color: #fff !important;
+    color: var(--text-primary) !important;
     font-weight: 700;
     font-size: 1.3rem;
     letter-spacing: 0.05em;
@@ -77,8 +103,19 @@ body {
 }
 
 .nav-links a:hover, .nav-links a.active {
-    color: #fff;
-    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    color: var(--text-primary);
+}
+
+.nav-indicator {
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    height: 3px;
+    background: var(--badge-open);
+    border-radius: 3px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 0;
+    pointer-events: none;
 }
 
 /* MAIN CONTENT */
@@ -129,7 +166,7 @@ body {
 .ticket-title {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--text-primary);
     margin: 0;
     text-decoration: none;
 }
@@ -180,10 +217,10 @@ body {
 
 /* BUTTONS */
 .btn-glass {
-    background: rgba(255,255,255,0.15);
+    background: var(--glass-bg);
     backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: #fff;
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
     padding: 0.6rem 1.5rem;
     border-radius: 9999px;
     font-size: 0.95rem;
@@ -197,10 +234,10 @@ body {
 }
 
 .btn-glass:hover {
-    background: rgba(255,255,255,0.25);
+    background: var(--glass-hover);
     transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(255,255,255,0.2);
-    color: #fff;
+    box-shadow: 0 0 15px var(--glass-border);
+    color: var(--text-primary);
 }
 
 .btn-glass-danger {
@@ -228,11 +265,11 @@ body {
 .input-glass {
     width: 100%;
     box-sizing: border-box;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     padding: 0.8rem 1rem;
     border-radius: 12px;
-    color: #fff;
+    color: var(--text-primary);
     font-family: inherit;
     font-size: 16px; /* Prevents iOS auto-zoom */
     margin-bottom: 1.5rem;
@@ -241,13 +278,13 @@ body {
 
 .input-glass:focus {
     outline: none;
-    border-color: rgba(255,255,255,0.5);
-    background: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    border-color: var(--text-primary);
+    background: var(--glass-hover);
+    box-shadow: 0 0 10px var(--glass-border);
 }
 
 .input-glass::placeholder {
-    color: rgba(255,255,255,0.4);
+    color: var(--text-secondary);
 }
 
 .input-glass option {
@@ -275,12 +312,12 @@ label.glass-label {
 }
 
 .custom-toast {
-    background: rgba(255,255,255,0.1);
+    background: var(--glass-bg);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.3);
+    border: 1px solid var(--glass-border);
     padding: 1rem 1.5rem;
     border-radius: 12px;
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 500;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), fadeOut 0.3s ease 4.7s forwards;
@@ -296,15 +333,69 @@ label.glass-label {
 
 /* NAVBAR BUTTONS */
 .pop-badge {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.3);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
     border-radius: 9999px;
     padding: 0.4rem 1rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--text-primary);
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+}
+
+/* NOTIFICATIONS */
+.nav-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4b4b;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 0.1rem 0.4rem;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(255, 75, 75, 0.5);
+}
+
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    top: 120%;
+    right: 0;
+    width: 300px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.notification-dropdown.show {
+    display: block;
+    animation: slideDown 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.notification-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.notification-item:hover {
+    background: var(--glass-hover);
+}
+.notification-item:last-child {
+    border-bottom: none;
 }
 
 /* RESPONSIVE LAYOUT */
@@ -395,7 +486,7 @@ label.glass-label {
     margin: 0;
     font-size: 2.5rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
 }
 
 /* QUICK VIEW MODAL */
