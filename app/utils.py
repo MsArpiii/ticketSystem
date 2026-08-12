@@ -1,5 +1,18 @@
 import re
+from datetime import datetime, timedelta
 
+def calculate_sla_deadline(severity: str) -> datetime:
+    """
+    Calculates the SLA deadline based on severity.
+    High = 4 hours, Medium = 24 hours, Low = 48 hours.
+    """
+    hours = 48 # default Low
+    if severity == 'High':
+        hours = 4
+    elif severity == 'Medium':
+        hours = 24
+        
+    return datetime.now() + timedelta(hours=hours)
 def auto_triage_severity(description: str, user_provided_severity: str = 'Low') -> str:
     """
     Analyzes ticket description text and automatically elevates severity

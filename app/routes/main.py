@@ -1,8 +1,16 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
 from app.models import db, Ticket, TicketHistory
 from sqlalchemy.exc import SQLAlchemyError
-from app.utils import auto_triage_severity
+from app.utils import auto_triage_severity, calculate_sla_deadline
+import os
+import uuid
+from werkzeug.utils import secure_filename
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'log', 'txt'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 main_bp = Blueprint('main', __name__)
 
@@ -22,8 +30,23 @@ def home():
         # Auto-triage: override severity if NLP detects a major issue
         final_severity = auto_triage_severity(desc, severity)
 
+        # File Upload Handling
+        attachment = request.files.get('attachment')
+        attachment_filename = None
+        if attachment and attachment.filename:
+            if allowed_file(attachment.filename):
+                safe_filename = secure_filename(attachment.filename)
+                unique_filename = f"{uuid.uuid4().hex}_{safe_filename}"
+                upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+                attachment.save(upload_path)
+                attachment_filename = unique_filename
+            else:
+                flash("❌ Invalid file type. Allowed: .png, .jpg, .jpeg, .pdf, .log, .txt", "danger")
+                return redirect(url_for("main.home"))
+
         try:
-            new_ticket = Ticket(title=title, description=desc, severity=final_severity, creator_id=current_user.id)
+            sla_deadline = calculate_sla_deadline(final_severity)
+            new_ticket = Ticket(title=title, description=desc, severity=final_severity, creator_id=current_user.id, sla_deadline=sla_deadline, attachment_filename=attachment_filename)
             db.session.add(new_ticket)
             db.session.flush() # Get new_ticket.id
             

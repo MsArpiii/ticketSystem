@@ -32,8 +32,13 @@ def create_app():
         app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(app.instance_path, db_name)}"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
-    # Ensure instance folder exists
+    # Configure Uploads
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
+    app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB
+    
+    # Ensure instance and upload folders exist
     os.makedirs(app.instance_path, exist_ok=True)
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
     db.init_app(app)
     login_manager.init_app(app)

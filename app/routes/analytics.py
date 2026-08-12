@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, flash
+from flask import Blueprint, render_template, flash, jsonify
+from flask_login import login_required, current_user
 from app.models import db, Ticket
 from sqlalchemy import func
 
@@ -26,3 +27,52 @@ def analytics():
         resolved=resolved,
         severity_data=severity_data
     )
+
+@analytics_bp.route("/api/v1/metrics")
+@login_required
+def api_metrics():
+    if not current_user.is_admin:
+        return jsonify({"error": "Unauthorized"}), 403
+        
+    try:
+        # 1. SLA Compliance Rate
+        total_tickets = db.session.query(Ticket).count()
+        if total_tickets == 0:
+            sla_compliance_rate = 100.0
+        else:
+            breached_tickets = db.session.query(Ticket).filter(Ticket.is_sla_breached == True).count()
+            sla_compliance_rate = ((total_tickets - breached_tickets) / total_tickets) * 100.0
+            
+        # 2. Tickets by Severity (Open)
+        severity_counts = db.session.query(Ticket.severity, func.count(Ticket.id)).filter(Ticket.status == 'Open').group_by(Ticket.severity).all()
+        severity_data = {sev: count for sev, count in severity_counts}
+        # ensure all keys exist
+        for k in ['High', 'Medium', 'Low']:
+            if k not in severity_data:
+                severity_data[k] = 0
+                
+        # 3. MTTR (Mean Time To Resolution)
+        # SQLite: julianday() converts datetime strings to Julian day numbers (days).
+        # We compute the average difference, then multiply by 24 for hours.
+        # Since created_at format is "YYYY-MM-DD HH:MM" and resolved_at is datetime, SQLite can handle it.
+        # Wait, created_at string might need appending ':00' or julianday handles it. 
+        # Using julianday for both.
+        mttr_query = db.session.query(
+            func.avg(
+                func.julianday(Ticket.resolved_at) - func.julianday(Ticket.created_at)
+            )
+        ).filter(Ticket.status == 'Resolved').scalar()
+        
+        # mttr_query is in days. Convert to hours.
+        if mttr_query is not None:
+            mttr_hours = mttr_query * 24.0
+        else:
+            mttr_hours = 0.0
+            
+        return jsonify({
+            "mttr_hours": round(mttr_hours, 2),
+            "sla_compliance_rate": round(sla_compliance_rate, 2),
+            "open_tickets_by_severity": severity_data
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

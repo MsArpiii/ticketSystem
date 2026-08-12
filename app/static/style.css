@@ -301,3 +301,10 @@ label.glass-label {
     align-items: center;
     gap: 0.4rem;
 }
+
+/* RESPONSIVE LAYOUT */
+@media (max-width: 768px) {
+    .bento-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app.models import db, Ticket, TicketHistory
+from app.models import db, Ticket, TicketHistory, TicketAuditLog
 from sqlalchemy.exc import SQLAlchemyError
 
 tickets_bp = Blueprint('tickets', __name__)
@@ -8,15 +8,20 @@ tickets_bp = Blueprint('tickets', __name__)
 @tickets_bp.route("/dashboard")
 @login_required
 def dashboard():
-    search = request.args.get("search", "")
+    from sqlalchemy import or_
+    
+    q = request.args.get("q", request.args.get("search", ""))
+    status = request.args.get("status", "")
     severity = request.args.get("severity", "")
     page = request.args.get("page", 1, type=int)
-    per_page = 6
+    per_page = request.args.get("per_page", 10, type=int)
     
     query = db.select(Ticket)
 
-    if search:
-        query = query.where(Ticket.title.like(f"%{search}%"))
+    if q:
+        query = query.where(or_(Ticket.title.ilike(f"%{q}%"), Ticket.description.ilike(f"%{q}%")))
+    if status:
+        query = query.where(Ticket.status == status)
     if severity:
         query = query.where(Ticket.severity == severity)
 
@@ -29,7 +34,10 @@ def dashboard():
     return render_template(
         "dashboard.html",
         tickets=tickets,
-        search=search,
+        search=q,
+        q=q,
+        status=status,
+        severity=severity,
         page=page,
         total_pages=total_pages
     )
@@ -45,8 +53,31 @@ def resolve(id):
     if not ticket:
         flash("❌ Ticket not found.", "danger")
     else:
+        if ticket.status != 'In Progress':
+            flash("❌ Ticket must be 'In Progress' to be resolved.", "danger")
+            return redirect(url_for("tickets.dashboard"))
+            
         try:
+            from datetime import datetime
+            old_status = ticket.status
             ticket.status = 'Resolved'
+            ticket.resolved_at = datetime.now()
+            
+            # Check SLA breach
+            if ticket.sla_deadline and ticket.resolved_at > ticket.sla_deadline:
+                ticket.is_sla_breached = True
+            else:
+                ticket.is_sla_breached = False
+            
+            audit_log = TicketAuditLog(
+                ticket_id=ticket.id,
+                changed_by_id=current_user.id,
+                old_status=old_status,
+                new_status='Resolved',
+                action_note="Ticket resolved"
+            )
+            db.session.add(audit_log)
+            
             log = TicketHistory(ticket_id=ticket.id, user_id=current_user.id, action="Resolved Ticket")
             db.session.add(log)
             db.session.commit()
@@ -137,10 +168,23 @@ def claim(id):
     if not ticket:
         flash("❌ Ticket not found.", "danger")
     else:
+        if ticket.status != 'Open':
+            flash("❌ Ticket must be 'Open' to be claimed.", "danger")
+            return redirect(url_for("tickets.dashboard"))
+            
         try:
+            old_status = ticket.status
             ticket.assigned_to_id = current_user.id
-            if ticket.status == 'Open':
-                ticket.status = 'In Progress'
+            ticket.status = 'In Progress'
+            
+            audit_log = TicketAuditLog(
+                ticket_id=ticket.id,
+                changed_by_id=current_user.id,
+                old_status=old_status,
+                new_status='In Progress',
+                action_note="Ticket claimed and marked In Progress"
+            )
+            db.session.add(audit_log)
             
             log = TicketHistory(ticket_id=ticket.id, user_id=current_user.id, action="Claimed Ticket & marked In Progress")
             db.session.add(log)
