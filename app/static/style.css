@@ -398,6 +398,13 @@ label.glass-label {
     border-bottom: none;
 }
 
+/* CHART CONTAINER */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
 /* RESPONSIVE LAYOUT */
 @media (max-width: 1024px) {
     .navbar > div {

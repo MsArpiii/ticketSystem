@@ -39,11 +39,15 @@
 <div class="charts-section" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
     <div class="glass-card">
         <h4 style="margin-top: 0;">Tickets by Severity</h4>
-        <canvas id="severityChart" data-chart="{{ severity_data }}" height="200"></canvas>
+        <div class="chart-container">
+            <canvas id="severityChart" data-chart="{{ severity_data }}"></canvas>
+        </div>
     </div>
     <div class="glass-card">
         <h4 style="margin-top: 0;">Status Breakdown</h4>
-        <canvas id="statusChart" data-chart="{{ status_data }}" height="200"></canvas>
+        <div class="chart-container">
+            <canvas id="statusChart" data-chart="{{ status_data }}"></canvas>
+        </div>
     </div>
 </div>
 
