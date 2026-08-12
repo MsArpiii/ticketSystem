@@ -81,13 +81,15 @@ function playSound(type) {
 const soundToggleBtn = document.getElementById('soundToggle');
 if (soundToggleBtn) {
     soundEnabled = localStorage.getItem('soundEnabled') === 'true';
-    soundToggleBtn.textContent = soundEnabled ? '🔊 Sound: On' : '🔇 Sound: Off';
+    soundToggleBtn.textContent = soundEnabled ? '🔊' : '🔇';
+    soundToggleBtn.title = soundEnabled ? 'Disable Sound' : 'Enable Sound';
 
     soundToggleBtn.addEventListener('click', () => {
         initAudio();
         soundEnabled = !soundEnabled;
         localStorage.setItem('soundEnabled', soundEnabled);
-        soundToggleBtn.textContent = soundEnabled ? '🔊 Sound: On' : '🔇 Sound: Off';
+        soundToggleBtn.textContent = soundEnabled ? '🔊' : '🔇';
+        soundToggleBtn.title = soundEnabled ? 'Disable Sound' : 'Enable Sound';
         if (soundEnabled) playSound('pop');
     });
 }
@@ -97,13 +99,15 @@ const themeToggleBtn = document.getElementById('themeToggle');
 const currentTheme = localStorage.getItem('theme') || 'dark';
 document.documentElement.setAttribute('data-theme', currentTheme);
 if (themeToggleBtn) {
-    themeToggleBtn.textContent = currentTheme === 'light' ? '☀️ Light' : '🌙 Dark';
+    themeToggleBtn.textContent = currentTheme === 'light' ? '☀️' : '🌙';
+    themeToggleBtn.title = currentTheme === 'light' ? 'Dark Mode' : 'Light Mode';
     themeToggleBtn.addEventListener('click', () => {
         let theme = document.documentElement.getAttribute('data-theme');
         theme = theme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
-        themeToggleBtn.textContent = theme === 'light' ? '☀️ Light' : '🌙 Dark';
+        themeToggleBtn.textContent = theme === 'light' ? '☀️' : '🌙';
+        themeToggleBtn.title = theme === 'light' ? 'Dark Mode' : 'Light Mode';
         if (soundEnabled) playSound('pop');
     });
 }
@@ -202,6 +206,44 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error("Failed to mark notification as read", e);
                 }
             });
+        });
+    }
+
+    // USER DROPDOWN
+    const userMenuToggle = document.getElementById('userMenuToggle');
+    const userDropdown = document.getElementById('userDropdown');
+    
+    if (userMenuToggle && userDropdown) {
+        userMenuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+            if (soundEnabled) playSound('pop');
+            if (notifDropdown && notifDropdown.classList.contains('show')) {
+                notifDropdown.classList.remove('show');
+            }
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (!userDropdown.contains(e.target) && !userMenuToggle.contains(e.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+    }
+    
+    // HAMBURGER MENU
+    const hamburgerToggle = document.getElementById('hamburgerToggle');
+    
+    if (hamburgerToggle && navLinksContainer) {
+        hamburgerToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navLinksContainer.classList.toggle('show');
+            if (soundEnabled) playSound('pop');
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (!navLinksContainer.contains(e.target) && !hamburgerToggle.contains(e.target)) {
+                navLinksContainer.classList.remove('show');
+            }
         });
     }
 });
