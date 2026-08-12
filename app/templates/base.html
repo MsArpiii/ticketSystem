@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SaaS Ticket Management System{% endblock %}</title>
+    <title>{% block title %}NexusITSM - Enterprise Support Desk{% endblock %}</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,7 +18,7 @@
 <nav class="navbar">
     <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; width: 100%;">
         <div style="display: flex; align-items: center;">
-            <a class="navbar-brand" style="text-decoration: none;" href="/">🎫 Bubble<span style="color: rgba(255,255,255,0.5)">Ticket</span></a>
+            <a class="navbar-brand" style="text-decoration: none;" href="/">🎫 Nexus<span style="color: rgba(255,255,255,0.5)">ITSM</span></a>
             <div class="nav-links">
                 <a href="{{ url_for('main.home') }}" class="{{ 'active' if request.endpoint == 'main.home' else '' }}">New</a>
                 <a href="{{ url_for('tickets.dashboard') }}" class="{{ 'active' if request.endpoint == 'tickets.dashboard' else '' }}">Dashboard</a>
