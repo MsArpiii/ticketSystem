@@ -8,7 +8,8 @@ tickets_bp = Blueprint('tickets', __name__)
 @tickets_bp.route("/dashboard")
 @login_required
 def dashboard():
-    from sqlalchemy import or_
+    from sqlalchemy import or_, func
+    import json
     
     q = request.args.get("q", request.args.get("search", ""))
     status = request.args.get("status", "")
@@ -30,6 +31,25 @@ def dashboard():
     pagination = db.paginate(query, page=page, per_page=per_page, error_out=False)
     tickets = pagination.items
     total_pages = pagination.pages or 1
+    
+    # Calculate Metrics
+    total_tickets = db.session.query(Ticket).count()
+    sla_breaches = db.session.query(Ticket).filter(Ticket.is_sla_breached == True).count()
+    open_incidents = db.session.query(Ticket).filter(Ticket.status == 'Open').count()
+    
+    mttr_query = db.session.query(
+        func.avg(func.julianday(Ticket.resolved_at) - func.julianday(Ticket.created_at))
+    ).filter(Ticket.status == 'Resolved').scalar()
+    avg_mttr = round(mttr_query * 24.0, 1) if mttr_query else 0.0
+
+    # Chart Data
+    severity_counts = db.session.query(Ticket.severity, func.count(Ticket.id)).group_by(Ticket.severity).all()
+    severity_dict = {sev: count for sev, count in severity_counts}
+    severity_data = [severity_dict.get('High', 0), severity_dict.get('Medium', 0), severity_dict.get('Low', 0)]
+
+    status_counts = db.session.query(Ticket.status, func.count(Ticket.id)).group_by(Ticket.status).all()
+    status_dict = {st: count for st, count in status_counts}
+    status_data = [status_dict.get('Open', 0), status_dict.get('In Progress', 0), status_dict.get('Resolved', 0)]
 
     return render_template(
         "dashboard.html",
@@ -39,7 +59,13 @@ def dashboard():
         status=status,
         severity=severity,
         page=page,
-        total_pages=total_pages
+        total_pages=total_pages,
+        total_tickets=total_tickets,
+        sla_breaches=sla_breaches,
+        open_incidents=open_incidents,
+        avg_mttr=avg_mttr,
+        severity_data=json.dumps(severity_data),
+        status_data=json.dumps(status_data)
     )
 
 @tickets_bp.route("/resolve/<int:id>", methods=["POST"])

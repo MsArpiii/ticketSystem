@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 from flask import Flask, render_template
 from flask_login import LoginManager
@@ -19,6 +20,11 @@ def create_app():
     
     # Load basic config from environment
     app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", "fallback-dev-key")
+    
+    # Configure Persistent Sessions
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+    app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
     
     # Use DATABASE_URL for Postgres in Prod, fallback to local SQLite
     database_url = os.environ.get("DATABASE_URL")
@@ -50,8 +56,17 @@ def create_app():
     from app.routes.main import main_bp
     from app.routes.tickets import tickets_bp
     from app.routes.analytics import analytics_bp
-    from app.routes.auth import auth_bp
+    from app.routes.auth import auth_bp, oauth
     from app.routes.api import api_bp
+    
+    oauth.init_app(app)
+    oauth.register(
+        name='google',
+        client_id=os.environ.get("GOOGLE_CLIENT_ID", "default-client-id"),
+        client_secret=os.environ.get("GOOGLE_CLIENT_SECRET", "default-client-secret"),
+        server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+        client_kwargs={'scope': 'openid email profile'}
+    )
 
     app.register_blueprint(main_bp)
     app.register_blueprint(tickets_bp)

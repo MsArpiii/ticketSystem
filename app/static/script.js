@@ -301,4 +301,131 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // ==========================================
+    // 📊 CHART.JS INTEGRATION
+    // ==========================================
+    const sevCanvas = document.getElementById('severityChart');
+    if (sevCanvas) {
+        const sevData = JSON.parse(sevCanvas.dataset.chart || '[0,0,0]');
+        new Chart(sevCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: ['High', 'Medium', 'Low'],
+                datasets: [{
+                    data: sevData,
+                    backgroundColor: ['#ff4b4b', '#ffb84d', '#00e676'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#fff' } }
+                }
+            }
+        });
+    }
+
+    const statCanvas = document.getElementById('statusChart');
+    if (statCanvas) {
+        const statData = JSON.parse(statCanvas.dataset.chart || '[0,0,0]');
+        new Chart(statCanvas, {
+            type: 'bar',
+            data: {
+                labels: ['Open', 'In Progress', 'Resolved'],
+                datasets: [{
+                    label: 'Tickets',
+                    data: statData,
+                    backgroundColor: ['#40c4ff', '#ffb84d', '#b0bec5'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { ticks: { color: '#fff', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { ticks: { color: '#fff' }, grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // ==========================================
+    // ⏱️ SLA COUNTDOWN TIMERS
+    // ==========================================
+    const updateTimers = () => {
+        const cards = document.querySelectorAll('.ticket-card[data-sla-deadline]');
+        cards.forEach(card => {
+            const deadlineStr = card.dataset.slaDeadline;
+            if (!deadlineStr) return;
+
+            const deadline = new Date(deadlineStr).getTime();
+            const now = new Date().getTime();
+            const diff = deadline - now;
+            
+            // If already resolved, we don't strictly need to tick, but let's keep UI simple
+            // and just style it if the card is open.
+            
+            if (diff < 0) {
+                card.style.borderColor = 'var(--badge-high)'; // Red
+                card.style.boxShadow = '0 0 15px rgba(255, 75, 75, 0.4)';
+            } else if (diff < 24 * 60 * 60 * 1000) { // Less than 24h
+                card.style.borderColor = 'var(--badge-medium)'; // Yellow
+                card.style.boxShadow = '0 0 15px rgba(255, 184, 77, 0.4)';
+            } else {
+                card.style.borderColor = 'var(--badge-low)'; // Green
+            }
+        });
+    };
+    setInterval(updateTimers, 60000); // Check every minute
+    updateTimers(); // Initial check
+
+    // ==========================================
+    // 🔍 QUICK VIEW MODAL
+    // ==========================================
+    const modal = document.getElementById('quickViewModal');
+    const closeBtn = document.getElementById('closeModalBtn');
+    
+    if (modal && closeBtn) {
+        document.querySelectorAll('.quick-view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('modalTitle').textContent = '#' + btn.dataset.id + ' ' + btn.dataset.title;
+                document.getElementById('modalStatus').innerHTML = '<span class="badge-minimal badge-' + btn.dataset.status.replace(' ', '-') + '">' + btn.dataset.status + '</span>';
+                document.getElementById('modalSeverity').innerHTML = '<span class="badge-minimal badge-' + btn.dataset.severity + '">' + btn.dataset.severity + '</span>';
+                document.getElementById('modalCreator').textContent = btn.dataset.creator;
+                document.getElementById('modalDesc').textContent = btn.dataset.desc;
+                
+                const attachSection = document.getElementById('modalAttachmentSection');
+                if (btn.dataset.attachment) {
+                    attachSection.style.display = 'block';
+                    document.getElementById('modalAttachmentLink').href = '/static/uploads/' + btn.dataset.attachment;
+                } else {
+                    attachSection.style.display = 'none';
+                }
+                
+                document.getElementById('modalFullViewBtn').href = '/view/' + btn.dataset.id;
+                
+                modal.style.display = 'flex';
+                if(soundEnabled) playSound('pop');
+            });
+        });
+        
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+
 });

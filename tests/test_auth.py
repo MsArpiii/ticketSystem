@@ -34,3 +34,14 @@ def test_register_duplicate(client):
     # Should fail and stay on register page
     assert response.status_code == 200
     assert b'Username already exists' in response.data
+
+def test_demo_login_admin(client):
+    response = client.get('/auth/demo-login?role=admin')
+    # Should redirect to dashboard on success
+    assert response.status_code == 302
+    assert b'/dashboard' in response.data
+    
+def test_demo_login_user(client):
+    response = client.get('/auth/demo-login?role=user')
+    assert response.status_code == 302
+    assert b'/dashboard' in response.data
