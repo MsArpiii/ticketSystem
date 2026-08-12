@@ -61,12 +61,86 @@ def create_app():
             db.session.add(demo_user)
             db.session.commit()
             
-            # Seed tickets
-            t1 = Ticket(title='Server crash in US-East', description='The main database server crashed.', severity='High', status='Open', creator_id=demo_user.id, sla_deadline=datetime.now() + timedelta(hours=4))
-            t2 = Ticket(title='Need access to Jira', description='Please grant me access to the engineering Jira board.', severity='Low', status='In Progress', creator_id=demo_user.id, assigned_to_id=demo_user.id, sla_deadline=datetime.now() + timedelta(hours=48))
-            t3 = Ticket(title='UI bug on dashboard', description='The charts are not rendering correctly on mobile.', severity='Medium', status='Open', creator_id=demo_user.id, sla_deadline=datetime.now() + timedelta(hours=24))
-            t4 = Ticket(title='Resolved: Payment gateway failure', description='Payments were failing. It has been fixed.', severity='High', status='Resolved', creator_id=demo_user.id, assigned_to_id=demo_user.id, resolved_at=datetime.now(), is_sla_breached=False)
-            db.session.add_all([t1, t2, t3, t4])
+            # Seed realistic tickets
+            import random
+            
+            titles_descs = [
+                ("Login page throwing 500 error", "When trying to log in using the SSO button, the page crashes with a 500 error.", "High"),
+                ("Unable to reset password", "The password reset link says it's expired immediately after receiving the email.", "High"),
+                ("Dashboard charts not loading on mobile", "The charts section is completely blank on iOS Safari.", "Medium"),
+                ("Feature request: dark mode for reports", "It would be great to have a dark theme when exporting reports.", "Low"),
+                ("Database connection timeout on checkout", "Users are reporting timeouts when trying to pay.", "High"),
+                ("Update billing address", "I need to change my corporate billing address for next month.", "Low"),
+                ("Add new admin user", "Please provision an admin account for the new IT hire.", "Medium"),
+                ("API rate limit exceeded", "Our integration is hitting the 429 rate limit too often.", "Medium"),
+                ("Missing data in Analytics tab", "The analytics tab shows 0 tickets for yesterday but we had 5.", "High"),
+                ("Change notification email", "Can we route alerts to a specific pager email?", "Low"),
+                ("SSO certificate expiring soon", "We got an alert that the SAML cert expires in 3 days.", "High"),
+                ("Typo on the landing page", "There is a spelling error in the second paragraph.", "Low"),
+                ("Cannot upload attachments > 2MB", "The system rejects my 3MB PDF file.", "Medium"),
+                ("Requesting API documentation", "Where can I find the Swagger docs?", "Low"),
+                ("Weekly report not sent", "The automated weekly report did not arrive on Monday.", "Medium"),
+                ("Account locked out", "I entered the wrong password 5 times and now I'm locked out.", "High"),
+                ("Integration webhook failing", "The webhook to Slack is returning a 403 error.", "Medium"),
+                ("Upgrade subscription plan", "We want to move to the Enterprise tier.", "Low"),
+                ("Slow performance during peak hours", "The dashboard takes 10+ seconds to load at 9 AM.", "High"),
+                ("Delete old user accounts", "Please purge the listed inactive accounts.", "Low")
+            ]
+            
+            now = datetime.now()
+            tickets_to_add = []
+            
+            for i, (title, desc, severity) in enumerate(titles_descs):
+                days_ago = random.randint(0, 30)
+                created_at = now - timedelta(days=days_ago, hours=random.randint(0, 23), minutes=random.randint(0, 59))
+                
+                status_roll = random.random()
+                if status_roll < 0.45:
+                    status = 'Resolved'
+                elif status_roll < 0.8:
+                    status = 'In Progress'
+                else:
+                    status = 'Open'
+                
+                sla_hours = {'Low': 72, 'Medium': 24, 'High': 4}[severity]
+                sla_deadline = created_at + timedelta(hours=sla_hours)
+                
+                is_sla_breached = False
+                resolved_at = None
+                
+                if status == 'Resolved':
+                    resolve_time = created_at + timedelta(hours=random.randint(1, sla_hours + 10))
+                    resolved_at = resolve_time
+                    if resolve_time > sla_deadline:
+                        is_sla_breached = True
+                else:
+                    if now > sla_deadline:
+                        is_sla_breached = True
+                
+                # Guarantee 1-2 SLA breached Open/In-progress tickets
+                if i < 2:
+                    created_at = now - timedelta(days=5)
+                    sla_deadline = created_at + timedelta(hours=sla_hours)
+                    is_sla_breached = True
+                    status = 'Open'
+                
+                assigned_to_id = demo_user.id if status != 'Open' else None
+                
+                t = Ticket(
+                    title=title,
+                    description=desc,
+                    severity=severity,
+                    status=status,
+                    creator_id=demo_user.id,
+                    assigned_to_id=assigned_to_id,
+                    created_at=created_at,
+                    sla_deadline=sla_deadline,
+                    resolved_at=resolved_at,
+                    is_sla_breached=is_sla_breached
+                )
+                tickets_to_add.append(t)
+                
+            db.session.add_all(tickets_to_add)
             db.session.commit()
 
     # Register Blueprints
