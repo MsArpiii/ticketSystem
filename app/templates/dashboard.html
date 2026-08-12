@@ -5,9 +5,14 @@
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="bento-header">
-    <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">Enterprise Dashboard</h2>
-    <a href="{{ url_for('main.home') }}" class="btn-glass">+ Create Ticket</a>
+<div class="bento-header" style="flex-direction: column; gap: 0.5rem; align-items: flex-start; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+        <h2 style="margin: 0; font-size: 1.8rem; font-weight: 600;">Enterprise Dashboard</h2>
+        <a href="{{ url_for('main.home') }}" class="btn-glass">+ Create Ticket</a>
+    </div>
+    <p style="margin: 0; font-size: 0.95rem; color: var(--text-secondary); max-width: 600px;">
+        Auto-triaged support ticketing — flags critical issues before a human reviews them.
+    </p>
 </div>
 
 <!-- METRICS SUMMARY CARDS -->
@@ -21,11 +26,11 @@
         <p class="metric-value" style="color: var(--badge-high);">{{ sla_breaches }}</p>
     </div>
     <div class="glass-card metric-card">
-        <h3>Open Incidents</h3>
+        <h3>Open</h3>
         <p class="metric-value" style="color: var(--badge-medium);">{{ open_incidents }}</p>
     </div>
     <div class="glass-card metric-card">
-        <h3>Avg MTTR (Hrs)</h3>
+        <h3>Avg Resolution Time</h3>
         <p class="metric-value" style="color: var(--badge-low);">{{ avg_mttr }}</p>
     </div>
 </div>

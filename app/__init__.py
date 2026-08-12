@@ -1,5 +1,5 @@
 import os
-from datetime import timedelta
+from datetime import timedelta, datetime
 from dotenv import load_dotenv
 from flask import Flask, render_template
 from flask_login import LoginManager
@@ -51,6 +51,23 @@ def create_app():
     
     with app.app_context():
         db.create_all()
+        
+        from werkzeug.security import generate_password_hash
+        from app.models import Ticket
+        
+        demo_user = db.session.scalar(db.select(User).where(User.username == 'demo_admin'))
+        if not demo_user:
+            demo_user = User(username='demo_admin', password=generate_password_hash('demo1234'), role='admin')
+            db.session.add(demo_user)
+            db.session.commit()
+            
+            # Seed tickets
+            t1 = Ticket(title='Server crash in US-East', description='The main database server crashed.', severity='High', status='Open', creator_id=demo_user.id, sla_deadline=datetime.now() + timedelta(hours=4))
+            t2 = Ticket(title='Need access to Jira', description='Please grant me access to the engineering Jira board.', severity='Low', status='In Progress', creator_id=demo_user.id, assigned_to_id=demo_user.id, sla_deadline=datetime.now() + timedelta(hours=48))
+            t3 = Ticket(title='UI bug on dashboard', description='The charts are not rendering correctly on mobile.', severity='Medium', status='Open', creator_id=demo_user.id, sla_deadline=datetime.now() + timedelta(hours=24))
+            t4 = Ticket(title='Resolved: Payment gateway failure', description='Payments were failing. It has been fixed.', severity='High', status='Resolved', creator_id=demo_user.id, assigned_to_id=demo_user.id, resolved_at=datetime.now(), is_sla_breached=False)
+            db.session.add_all([t1, t2, t3, t4])
+            db.session.commit()
 
     # Register Blueprints
     from app.routes.main import main_bp

@@ -1,11 +1,11 @@
-# 🚀 SaaS Support Ticket Management System
+# 🚀 TriageDesk
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.0-black.svg?logo=flask)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-ORM-red.svg)
 ![Pytest](https://img.shields.io/badge/Pytest-Passing-brightgreen.svg)
 
-SaaS Support Ticket Management System is a modern, responsive, and highly interactive IT Support System. It reimagines the traditional enterprise support desk into a visually stunning, Glassmorphism-powered web application backed by a robust, production-ready Python architecture.
+TriageDesk is a modern, responsive, and highly interactive IT Support System. It reimagines the traditional enterprise support desk into a visually stunning, Glassmorphism-powered web application backed by a robust, production-ready Python architecture.
 
 ## ✨ Features
 

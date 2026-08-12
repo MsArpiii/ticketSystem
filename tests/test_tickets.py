@@ -20,7 +20,7 @@ def test_ticket_creation_and_auto_triage(client, app):
     
     # Check if DB actually elevated it to High because of 'database' & 'crash'
     with app.app_context():
-        ticket = db.session.query(Ticket).first()
+        ticket = db.session.query(Ticket).order_by(Ticket.id.desc()).first()
         assert ticket is not None
         assert ticket.severity == 'High'
         assert ticket.creator.username == 'user1'
